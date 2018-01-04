@@ -4,7 +4,7 @@ To date, this has been tested on the Mac GUI version of Stata 14.1 and
 Stata 12.0.
 
 Stuart Craig
-Last updated 20171229
+Last updated 20180103
 */
 
 version 12.0
@@ -20,35 +20,20 @@ Program to draw/animate the game board
 
 	cap prog drop artillery_drawgameboard
 	prog define artillery_drawgameboard
-		args target pos_x pos_y
+		args target pos_x pos_y b1 b2 b3 b4
 		
-		// Clear previous
-		forval i=1/20 {
-			di ""
+		if `pos_x'>0&`pos_y'>0 {
+			* di _newline(20)
+			di _newline(`=71 - `pos_y'')
+			di as text _column(`pos_x') "*"
+			di _newline(`=`pos_y'-1')
 		}
+		else di _newline(70)
 		
-		// Draw the game board, placing bomb at the right spot
-		forval y=1/50 {
-			// skip the whole line if that's not the right y
-			if `y'!=51-`pos_y' di "" 
-			// If it is, fill it in
-			else {
-				forval x=0/99 {
-					if `x'==`pos_x' di as text "*" _c
-					else di " " _c
-				}
-			}
-			di ""		
-		}
-		// Draw the cannon
-		di as text " // " _c
-		
-		// Where's the target?
-		forval i=3/99 {
-			if `i'==`target' di in red "X" _c
-			else di as result "=" _c
-		}
-	
+		di as text "`b1'" _c
+		di as result "`b2'" _c
+		di in red "`b3'" _c
+		di as result "`b4'" _c
 	
 	end
 
@@ -65,10 +50,7 @@ Program to draw the final hit (success or not)
 		args x_end target
 		
 		// Clear the game board
-		forval i=1/70 {
-			di ""
-		}
-		
+		di _newline(70)
 		// Draw the cannon
 		di as text " // " _c
 		
@@ -110,11 +92,25 @@ for
 		* loc targ=60 // just a testing value
 		loc targ = 30+ round(70*runiform())
 		
+		
+		// "Draw" board up front (saves time in the animation)
+		loc boardstring1 "//"
+		loc boardstring2 ""
+		forval x=3/`=`targ'-1' {
+			loc boardstring2 "`boardstring2'="
+		}
+		loc boardstring3 "X"
+		loc boardstring4 ""
+		forval x=`=`targ'+1'/99 {
+			loc boardstring4 "`boardstring4'="
+		}
+		
 		loc on=1
 		while `on'==1 {
 		
 		// Prompt for input
-			artillery_drawgameboard `targ' 0 0 
+			artillery_drawgameboard `targ' 0 0 ///
+				"`boardstring1'" "`boardstring2'" "`boardstring3'" "`boardstring4'"
 			di ""
 			loc theta=-9 
 			while `theta'==-9 {
@@ -153,7 +149,8 @@ for
 			}	
 			// Animate
 			forval t=1/`T' {
-				artillery_drawgameboard `targ' `x`t'' `y`t''
+				artillery_drawgameboard `targ' `x`t'' `y`t'' ///
+					"`boardstring1'" "`boardstring2'" "`boardstring3'" "`boardstring4'"
 				di ""
 				di ""
 				di ""
@@ -201,9 +198,7 @@ Main wrapper
 	cap prog drop artillery
 	prog define artillery
 	
-		forval i=1/70 {
-		di ""
-		}
+		di _newline(70)
 		di as result "======================================================"
 		di as text " Welcome to ARTILLERY, enter anything to continue"
 		di as text " Quit any time by typing 'quit'"
