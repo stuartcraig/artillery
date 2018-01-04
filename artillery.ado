@@ -26,7 +26,7 @@ Program to draw/animate the game board
 			* di _newline(20)
 			di _newline(`=71 - `pos_y'')
 			di as text _column(`pos_x') "*"
-			di _newline(`=`pos_y'-1')
+			di _newline(`=`pos_y'+1')
 		}
 		else di _newline(70)
 		
@@ -94,7 +94,7 @@ for
 		
 		
 		// "Draw" board up front (saves time in the animation)
-		loc boardstring1 "//"
+		loc boardstring1 " // "
 		loc boardstring2 ""
 		forval x=3/`=`targ'-1' {
 			loc boardstring2 "`boardstring2'="
