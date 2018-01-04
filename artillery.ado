@@ -148,7 +148,7 @@ for
 				loc y`t'=round(`v'*`t'*sin(`theta') - 0.5*`g'*`t'^2)
 			}	
 			// Animate
-			forval t=1/`T' {
+			forval t=1/`=`T'-1' {
 				artillery_drawgameboard `targ' `x`t'' `y`t'' ///
 					"`boardstring1'" "`boardstring2'" "`boardstring3'" "`boardstring4'"
 				di ""
